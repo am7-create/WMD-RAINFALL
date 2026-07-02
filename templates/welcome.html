@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WMD Irrigation Portal — West Midnapore Division</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #3a7ab8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+canvas#rain {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.top-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 5px;
+  width: 0%;
+  background: linear-gradient(90deg, #ff6b00, #ff9d00);
+  z-index: 10;
+  animation: loadbar 2.5s ease-out forwards;
+}
+@keyframes loadbar { from { width: 0%; } to { width: 100%; } }
+.card {
+  position: relative;
+  z-index: 5;
+  background: linear-gradient(145deg, rgba(130,60,120,0.7) 0%, rgba(30,80,70,0.85) 100%);
+  border-radius: 22px;
+  padding: 48px 52px 44px;
+  text-align: center;
+  max-width: 680px;
+  width: 90%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06);
+  backdrop-filter: blur(4px);
+  animation: fadeUp 0.9s ease both;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.govt-label {
+  color: #a8d8c0;
+  font-size: 0.82rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.card h1 {
+  color: #f5e46a;
+  font-size: 2.55rem;
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  margin-bottom: 18px;
+}
+.divider {
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #b8860b, #f5c842);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+.dept-name {
+  color: #2EC4B6;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.dept-sub {
+  color: #a8d8c0;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+.btn-enter {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 42px;
+  padding: 16px 48px;
+  background: linear-gradient(135deg, #1a4a30, #0d3522);
+  color: #f5e46a;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 2.5px solid #b8860b;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  z-index: 5;
+  position: relative;
+  animation: fadeUp 0.9s 0.3s ease both;
+}
+.btn-enter:hover {
+  background: linear-gradient(135deg, #25623f, #163d28);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+  border-color: #f5c842;
+}
+.btn-enter .arrow { font-size: 1.1rem; transition: transform 0.2s; }
+.btn-enter:hover .arrow { transform: translateX(5px); }
+footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 5;
+  text-align: center;
+  padding: 14px;
+  color: rgba(200,230,240,0.5);
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+}
+footer span { margin: 0 10px; }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+<canvas id="rain"></canvas>
+
+<div class="card">
+  <div class="govt-label">Government of West Bengal</div>
+  <h1>Executive Engineer<br>West Midnapore Division</h1>
+  <div class="divider"></div>
+  <div class="dept-name">Irrigation &amp; Waterways Directorate</div>
+  <div class="dept-sub">Government of West Bengal</div>
+</div>
+
+<a href="/portal" class="btn-enter">
+  Enter Portal <span class="arrow">→</span>
+</a>
+
+<footer>
+  <span>West Midnapore Division</span> ·
+  <span>Irrigation &amp; Waterways Directorate</span> ·
+  <span>Govt. of West Bengal</span>
+</footer>
+
+<script>
+const canvas = document.getElementById('rain');
+const ctx = canvas.getContext('2d');
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+const drops = Array.from({ length: 220 }, () => ({
+  x: Math.random() * window.innerWidth,
+  y: Math.random() * window.innerHeight,
+  len: Math.random() * 18 + 8,
+  speed: Math.random() * 4 + 3,
+  op: Math.random() * 0.3 + 0.08,
+  thick: Math.random() * 0.8 + 0.3,
+}));
+function drawRain() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drops.forEach(d => {
+    ctx.beginPath();
+    ctx.moveTo(d.x, d.y);
+    ctx.lineTo(d.x - 1.5, d.y + d.len);
+    ctx.strokeStyle = `rgba(180,210,230,${d.op})`;
+    ctx.lineWidth = d.thick;
+    ctx.stroke();
+    d.y += d.speed;
+    if (d.y > canvas.height) { d.y = -d.len; d.x = Math.random() * canvas.width; }
+  });
+  requestAnimationFrame(drawRain);
+}
+drawRain();
+</script>
+</body>
+</html>
